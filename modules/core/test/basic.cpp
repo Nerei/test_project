@@ -63,7 +63,7 @@ int main()
   DECLARE_TYPES(Type, TypeSuffix, 2, 2) \
   DECLARE_TYPES(Type, TypeSuffix, 3, 3) \
   DECLARE_TYPES(Type, TypeSuffix, 4, 4)
-  
+
   DECLARE_TYPES_ALL_SIZES(int,    i)
   DECLARE_TYPES_ALL_SIZES(float,  f)
   DECLARE_TYPES_ALL_SIZES(double, d)
@@ -77,7 +77,7 @@ int main()
   pcl::Quaterniond qd;
 
   pcl::AngleAxisf anf;
-  pcl::AngleAxisd and;
+  pcl::AngleAxisd andf;
   pcl::Rotation2Df r2f(3);
   pcl::Rotation2Dd r2d(3);
   pcl::Translation2f t2f;

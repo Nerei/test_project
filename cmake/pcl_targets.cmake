@@ -67,7 +67,7 @@ endfunction()
 function(pcl_add_test name)
   set(multiValueArgs FILES ARGUMENTS LINK_WITH)
   cmake_parse_arguments(PCL_ADD_TEST "" "" "${multiValueArgs}" ${ARGN})
-  
+
   add_executable(${name} ${PCL_ADD_TEST_FILES})
   target_link_libraries(${name} ${PCL_ADD_TEST_LINK_WITH})
 
@@ -79,7 +79,7 @@ function(pcl_add_test name)
   elseif(UNIX AND NOT ANDROID_NDK)
     set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
-    target_link_libraries(${_exename} pthread)
+    #target_link_libraries(${_exename})
   endif()
 
   if(USE_PROJECT_FOLDERS)
@@ -127,7 +127,7 @@ endmacro()
 function(pcl_add_module_tests)
   set(__test_path ${CMAKE_CURRENT_SOURCE_DIR}/test)
   if(BUILD_TESTS AND EXISTS "${__test_path}")
-    file(GLOB __srcs "${__test_path}/*.cpp" "${__test_path}/*.h*")       
+    file(GLOB __srcs "${__test_path}/*.cpp" "${__test_path}/*.h*")
     pcl_add_test(test_${module_name} FILES ${__srcs} LINK_WITH pcl_${module_name})
   endif()
   unset(__test_path)
