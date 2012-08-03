@@ -81,21 +81,25 @@ void pcl::scaleCloud2(const In& input_cloud, Out& output_cloud)
   //gets data, works only if 'input_cloud' proxy class was constructed with Cloud or CloudData
   const CloudData cloud_data1 = input_cloud.get();
 
-  //gets "typed" data, worsk for CloudSet, Cloud<Normal3f>, std::vector<Normal3f>
-  //returns empty pointer of input doesn't contain such channel
+  //gets "typed" data, works for CloudSet, Cloud<Normal3f>, std::vector<Normal3f>
+  //returns empty pointer if input doesn't contain such channel
   const Cloud<Normal3f> cloud1 = input_cloud.get<Normal3f>();
 
+  size_t rows = 10;
+  size_t cols = 10;
+  size_t colsBytes = cols * sizeof(Point3f);
+
   //allocates "typed" channel, works for CloudSet, Cloud<Point3f>, vector<Point3f>
-  Cloud<Point3f> c1 = output_cloud.create<Point3f>(10, 10);
+  Cloud<Point3f> c1 = output_cloud.create<Point3f>(rows, cols);
 
   //allocates "named" channel, works only for CloudSet
-  CloudData c2 = output_cloud.create(10, 10 * sizeof(Point3f), "named");
+  CloudData c2 = output_cloud.create(rows, colsBytes, "named");
 
   // allocates array, works only for Cloud<T>, CloudData, vector<T>
-  // PCL_Assert(10 * sizeof(Point3f) % sizeof(T) == 0)
   // won't work for CloudSet since "unnamed" and "untyped"
-  CloudData c3 = output_cloud.create(10, 10 * sizeof(Point3f));
-
+  // PCL_Assert(colsBytes % sizeof(T) == 0), where T is a value of template parameter of object from which output_cloud was constructed
+  // That means if passed vector<Point3f>, then can't allocate colsBytes == 2.    
+  CloudData c3 = output_cloud.create(rows, colsBytes);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
