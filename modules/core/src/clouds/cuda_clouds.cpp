@@ -39,57 +39,57 @@ using namespace pcl;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// CudaData
+// CudaChannelData
 
 #if !defined HAVE_CUDA
 
 void throw_nocuda() { PCL_FatalError("The library was compiled without CUDA support"); }
 
-pcl::cuda::CudaData::CudaData() { throw_nocuda(); }       
-pcl::cuda::CudaData::~CudaData() { throw_nocuda(); }       
-pcl::cuda::CudaData::CudaData(size_type /*sizeBytes*/) { throw_nocuda(); }
-pcl::cuda::CudaData::CudaData(size_type /*rows*/, size_type /*colsBytes*/) { throw_nocuda(); }
-pcl::cuda::CudaData::CudaData(size_type /*sizeBytes*/, void* /*data*/) { throw_nocuda(); }
-pcl::cuda::CudaData::CudaData(const CudaData& /*other*/) { throw_nocuda(); }
-pcl::cuda::CudaData& pcl::cuda::CudaData::operator=(const CudaData& /*other*/) { throw_nocuda(); return *this; }
-void pcl::cuda::CudaData::create(size_t /*sizeBytes*/) { throw_nocuda(); }
-void pcl::cuda::CudaData::release() { throw_nocuda(); }
-void pcl::cuda::CudaData::copyTo(CudaData& /*other*/) const { throw_nocuda(); }
-void pcl::cuda::CudaData::swap(CudaData& other) { throw_nocuda(); }
-bool pcl::cuda::CudaData::empty() const { throw_nocuda(); return true; }          
-pcl::CloudData::size_type pcl::cuda::CudaData::colsBytes() const { throw_nocuda(); return 0; }
+pcl::cuda::CudaChannelData::CudaChannelData() { throw_nocuda(); }       
+pcl::cuda::CudaChannelData::~CudaChannelData() { throw_nocuda(); }       
+pcl::cuda::CudaChannelData::CudaChannelData(size_type /*sizeBytes*/) { throw_nocuda(); }
+pcl::cuda::CudaChannelData::CudaChannelData(size_type /*rows*/, size_type /*colsBytes*/) { throw_nocuda(); }
+pcl::cuda::CudaChannelData::CudaChannelData(size_type /*sizeBytes*/, void* /*data*/) { throw_nocuda(); }
+pcl::cuda::CudaChannelData::CudaChannelData(const CudaChannelData& /*other*/) { throw_nocuda(); }
+pcl::cuda::CudaChannelData& pcl::cuda::CudaChannelData::operator=(const CudaChannelData& /*other*/) { throw_nocuda(); return *this; }
+void pcl::cuda::CudaChannelData::create(size_t /*sizeBytes*/) { throw_nocuda(); }
+void pcl::cuda::CudaChannelData::release() { throw_nocuda(); }
+void pcl::cuda::CudaChannelData::copyTo(CudaChannelData& /*other*/) const { throw_nocuda(); }
+void pcl::cuda::CudaChannelData::swap(CudaChannelData& other) { throw_nocuda(); }
+bool pcl::cuda::CudaChannelData::empty() const { throw_nocuda(); return true; }          
+pcl::ChannelData::size_type pcl::cuda::CudaChannelData::colsBytes() const { throw_nocuda(); return 0; }
 
-void pcl::cuda::CudaData::upload(const CloudData& /*cloud_data*/) { throw_nocuda(); }
-void pcl::cuda::CudaData::download(CloudData& /*cloud_data*/) const { throw_nocuda(); }
+void pcl::cuda::CudaChannelData::upload(const ChannelData& /*Channel_data*/) { throw_nocuda(); }
+void pcl::cuda::CudaChannelData::download(ChannelData& /*Channel_data*/) const { throw_nocuda(); }
 
 #else
 
-pcl::cuda::CudaData::CudaData() : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) {} 
-pcl::cuda::CudaData::CudaData(size_type sizeBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) 
+pcl::cuda::CudaChannelData::CudaChannelData() : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) {} 
+pcl::cuda::CudaChannelData::CudaChannelData(size_type sizeBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) 
 { create(sizeBytes); } 
 
-pcl::cuda::CudaData::CudaData(size_type rows, size_type colsBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
+pcl::cuda::CudaChannelData::CudaChannelData(size_type rows, size_type colsBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
 { create(rows, colsBytes); } 
 
-pcl::cuda::CudaData::CudaData(size_type sizeBytes, void *data) : data_((unsigned char*)data), step_(0), rows_(1), colsBytes_(sizeBytes), refcount_(0), dense_(true) {}
+pcl::cuda::CudaChannelData::CudaChannelData(size_type sizeBytes, void *data) : data_((unsigned char*)data), step_(0), rows_(1), colsBytes_(sizeBytes), refcount_(0), dense_(true) {}
 
-pcl::cuda::CudaData::CudaData(size_type rows, size_type colsBytes, void *data, size_type step) 
+pcl::cuda::CudaChannelData::CudaChannelData(size_type rows, size_type colsBytes, void *data, size_type step) 
    : data_((unsigned char*)data), step_(step), rows_(rows), colsBytes_(colsBytes), refcount_(0), dense_(true) {}
           
-pcl::cuda::CudaData::~CudaData() { release(); }
+pcl::cuda::CudaChannelData::~CudaChannelData() { release(); }
 
 
-pcl::cuda::CudaData::CudaData(const CudaData& other) : data_(other.data_), step_(other.step_), rows_(other.rows_), 
+pcl::cuda::CudaChannelData::CudaChannelData(const CudaChannelData& other) : data_(other.data_), step_(other.step_), rows_(other.rows_), 
     colsBytes_(other.colsBytes_), refcount_(other.refcount_), dense_(other.dense_)
 {
   if( refcount_ )
     __XADD__(refcount_, 1);
 }
 
-pcl::cuda::CudaData::CudaData(const CloudData& other) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) 
+pcl::cuda::CudaChannelData::CudaChannelData(const ChannelData& other) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) 
 { upload(other); } 
 
-pcl::cuda::CudaData& pcl::cuda::CudaData::operator=(const CudaData& other)
+pcl::cuda::CudaChannelData& pcl::cuda::CudaChannelData::operator=(const CudaChannelData& other)
 {
   if( this != &other )
   {
@@ -107,7 +107,7 @@ pcl::cuda::CudaData& pcl::cuda::CudaData::operator=(const CudaData& other)
   return *this;
 }
  
-void pcl::cuda::CudaData::create(size_t sizeBytes) 
+void pcl::cuda::CudaChannelData::create(size_t sizeBytes) 
 {  
   if (!pitched() && rows_ == 1 && colsBytes_ == sizeBytes)
     return;
@@ -128,7 +128,7 @@ void pcl::cuda::CudaData::create(size_t sizeBytes)
   }
 }
 
-void pcl::cuda::CudaData::create(size_type rows, size_type colsBytes)
+void pcl::cuda::CudaChannelData::create(size_type rows, size_type colsBytes)
 {
   if (rows  == rows_ && colsBytes == colsBytes_ && pitched())
     return;
@@ -148,7 +148,7 @@ void pcl::cuda::CudaData::create(size_type rows, size_type colsBytes)
   }
 }
           
-void pcl::cuda::CudaData::release()
+void pcl::cuda::CudaChannelData::release()
 {
   if( refcount_ && __XADD__(refcount_, -1) == 1 )
   {  
@@ -163,7 +163,7 @@ void pcl::cuda::CudaData::release()
   refcount_ = 0;
 }
 
-void pcl::cuda::CudaData::swap(CudaData& other)
+void pcl::cuda::CudaChannelData::swap(CudaChannelData& other)
 {
   std::swap(data_, other.data_);
   std::swap(step_, other.step_);
@@ -173,7 +173,7 @@ void pcl::cuda::CudaData::swap(CudaData& other)
   std::swap(dense_, other.dense_);
 }
 
-void pcl::cuda::CudaData::copyTo(CudaData& other) const
+void pcl::cuda::CudaChannelData::copyTo(CudaChannelData& other) const
 {
   if (empty())  
   {
@@ -194,55 +194,55 @@ void pcl::cuda::CudaData::copyTo(CudaData& other) const
   cudaSafeCall( cudaDeviceSynchronize() );
 }
 
-bool pcl::cuda::CudaData::empty() const { return !data_; }
-pcl::cuda::CudaData::size_type pcl::cuda::CudaData::rows() const { return rows_; }
-pcl::cuda::CudaData::size_type pcl::cuda::CudaData::colsBytes() const { return colsBytes_; }
-pcl::cuda::CudaData::size_type pcl::cuda::CudaData::step() const { return step_; }
-bool& pcl::cuda::CudaData::dense() { return dense_; }
-bool  pcl::cuda::CudaData::dense() const  { return dense_; }  
-bool  pcl::cuda::CudaData::pitched() const { return step() != 0; }
+bool pcl::cuda::CudaChannelData::empty() const { return !data_; }
+pcl::cuda::CudaChannelData::size_type pcl::cuda::CudaChannelData::rows() const { return rows_; }
+pcl::cuda::CudaChannelData::size_type pcl::cuda::CudaChannelData::colsBytes() const { return colsBytes_; }
+pcl::cuda::CudaChannelData::size_type pcl::cuda::CudaChannelData::step() const { return step_; }
+bool& pcl::cuda::CudaChannelData::dense() { return dense_; }
+bool  pcl::cuda::CudaChannelData::dense() const  { return dense_; }  
+bool  pcl::cuda::CudaChannelData::pitched() const { return step() != 0; }
 
-void pcl::cuda::CudaData::upload(const CloudData& cloud_data)
+void pcl::cuda::CudaChannelData::upload(const ChannelData& Channel_data)
 {
-  if (cloud_data.rows() == 1)
+  if (Channel_data.rows() == 1)
   {
-    create(cloud_data.colsBytes());
-    cudaSafeCall( cudaMemcpy(data_, cloud_data.ptr<void>(), colsBytes_, cudaMemcpyHostToDevice) );      
+    create(Channel_data.colsBytes());
+    cudaSafeCall( cudaMemcpy(data_, Channel_data.ptr<void>(), colsBytes_, cudaMemcpyHostToDevice) );      
   }
   else
   {
-    create(cloud_data.rows(), cloud_data.colsBytes());
-    cudaSafeCall( cudaMemcpy2D(data_, step_, cloud_data.ptr<void>(), cloud_data.step(), colsBytes_, rows_, cudaMemcpyHostToDevice) );  
+    create(Channel_data.rows(), Channel_data.colsBytes());
+    cudaSafeCall( cudaMemcpy2D(data_, step_, Channel_data.ptr<void>(), Channel_data.step(), colsBytes_, rows_, cudaMemcpyHostToDevice) );  
   }
   cudaSafeCall( cudaDeviceSynchronize() );
 }
 
-void pcl::cuda::CudaData::download(CloudData& cloud_data) const
+void pcl::cuda::CudaChannelData::download(ChannelData& Channel_data) const
 {
-  cloud_data.create(rows_, colsBytes_);
+  Channel_data.create(rows_, colsBytes_);
 
   if (!pitched())
-    cudaSafeCall( cudaMemcpy(cloud_data.ptr<void>(), data_, colsBytes_, cudaMemcpyDeviceToHost) );
+    cudaSafeCall( cudaMemcpy(Channel_data.ptr<void>(), data_, colsBytes_, cudaMemcpyDeviceToHost) );
   else
-    cudaSafeCall( cudaMemcpy2D(cloud_data.ptr<void>(), cloud_data.step(), data_, step_, colsBytes_, rows_, cudaMemcpyDeviceToHost) );  
+    cudaSafeCall( cudaMemcpy2D(Channel_data.ptr<void>(), Channel_data.step(), data_, step_, colsBytes_, rows_, cudaMemcpyDeviceToHost) );  
 }         
  
 #endif
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// CudaCloudSet
+// CudaCloud
 
-pcl::cuda::CudaCloudSet::CudaCloudSet()
+pcl::cuda::CudaCloud::CudaCloud()
 {
-  for(int i = 0; i < MAX_CLOUDS; ++i)
+  for(int i = 0; i < MAX_ChannelS; ++i)
     storage_[i].type_ = ChannelKind::None;
 }
 
-pcl::cuda::CudaData pcl::cuda::CudaCloudSet::create(size_type rows, size_type colsBytes, const std::string& name)
+pcl::cuda::CudaChannelData pcl::cuda::CudaCloud::create(size_type rows, size_type colsBytes, const std::string& name)
 {
   int i = name_search(name);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.create(rows, colsBytes);
     storage_[i].type_ = ChannelKind::None;
@@ -250,42 +250,42 @@ pcl::cuda::CudaData pcl::cuda::CudaCloudSet::create(size_type rows, size_type co
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.create(rows, colsBytes);
     storage_[i].name_ = name;
     storage_[i].type_ = ChannelKind::None;
   }
   else
-      PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+      PCL_FatalError("Maximal supported Channels limit reached for Cloud");
   return storage_[i].data_;
 }
 
-void pcl::cuda::CudaCloudSet::set(const CudaData& data, const std::string& name)
+void pcl::cuda::CudaCloud::set(const CudaChannelData& data, const std::string& name)
 {
   int i = name_search(name);  
   
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_ = data;
     return;
   } 
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_ = data;
     storage_[i].name_ = name;
     storage_[i].type_ = ChannelKind::None;
   }
   else
-      PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+      PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 }     
 
-void pcl::cuda::CudaCloudSet::remove(const std::string& name)
+void pcl::cuda::CudaCloud::remove(const std::string& name)
 {
   int i = name_search(name);  
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.release();
     storage_[i].name_.clear();
@@ -293,42 +293,42 @@ void pcl::cuda::CudaCloudSet::remove(const std::string& name)
   }
 }
 
-pcl::cuda::CudaData pcl::cuda::CudaCloudSet::get(const std::string& name)
+pcl::cuda::CudaChannelData pcl::cuda::CudaCloud::get(const std::string& name)
 {
   int i = name_search(name);
-  return i == MAX_CLOUDS ? CloudData() : storage_[i].data_;
+  return i == MAX_ChannelS ? ChannelData() : storage_[i].data_;
 }
 
-const pcl::cuda::CudaData pcl::cuda::CudaCloudSet::get(const std::string& name) const
+const pcl::cuda::CudaChannelData pcl::cuda::CudaCloud::get(const std::string& name) const
 {
   int i = name_search(name);
-  return i == MAX_CLOUDS ? CloudData() : storage_[i].data_;
+  return i == MAX_ChannelS ? ChannelData() : storage_[i].data_;
 }
                         
-void pcl::cuda::CudaCloudSet::set(const CudaData& cloud_data, int type)
+void pcl::cuda::CudaCloud::set(const CudaChannelData& Channel_data, int type)
 {
   int i = type_search(type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    storage_[i].data_ = cloud_data;    
+    storage_[i].data_ = Channel_data;    
     return;
   } 
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    storage_[i].data_ = cloud_data;
+    storage_[i].data_ = Channel_data;
     storage_[i].type_ = type; 
     storage_[i].name_.clear();    
   }
   else
-      PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+      PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 }
   
-void pcl::cuda::CudaCloudSet::remove(int type)
+void pcl::cuda::CudaCloud::remove(int type)
 {
   int i = type_search(type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.release();
     storage_[i].name_.clear();
@@ -336,28 +336,28 @@ void pcl::cuda::CudaCloudSet::remove(int type)
   }
 }
    
-int pcl::cuda::CudaCloudSet::name_search(const std::string& name) const
+int pcl::cuda::CudaCloud::name_search(const std::string& name) const
 {
   int i = 0;  
-  for(; i < MAX_CLOUDS; ++i)  
+  for(; i < MAX_ChannelS; ++i)  
     if(storage_[i].name_ == name)
       break;
   return i;
 }
 
-int pcl::cuda::CudaCloudSet::type_search(int type) const
+int pcl::cuda::CudaCloud::type_search(int type) const
 {
   int i = 0;  
-  for(; i < MAX_CLOUDS; ++i)  
+  for(; i < MAX_ChannelS; ++i)  
     if(storage_[i].type_ == type)
       break;
   return i;
 }
 
-int pcl::cuda::CudaCloudSet::empty_search() const
+int pcl::cuda::CudaCloud::empty_search() const
 {
   int i = 0;  
-  for(; i < MAX_CLOUDS; ++i)  
+  for(; i < MAX_ChannelS; ++i)  
     if(storage_[i].name_.empty() && storage_[i].type_ ==  ChannelKind::None)
       break;
   return i;

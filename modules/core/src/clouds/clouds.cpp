@@ -39,27 +39,27 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // CludaData
 
-pcl::CloudData::CloudData() : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) {}
-pcl::CloudData::CloudData(size_type sizeBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
+pcl::ChannelData::ChannelData() : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true) {}
+pcl::ChannelData::ChannelData(size_type sizeBytes) : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
 { create(sizeBytes); }
 
-pcl::CloudData::CloudData(size_type rows, size_type colsBytes)  : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
+pcl::ChannelData::ChannelData(size_type rows, size_type colsBytes)  : data_(0), step_(0), rows_(0), colsBytes_(0), refcount_(0), dense_(true)
 { create(rows, colsBytes); }
 
-pcl::CloudData::CloudData(size_type sizeBytes, void *data) : data_((unsigned char*)data), step_(sizeBytes), rows_(1), colsBytes_(sizeBytes), refcount_(0), dense_(true) {}
-pcl::CloudData::CloudData(size_type rows, size_type colsBytes, void *data) : data_((unsigned char*)data), step_(colsBytes), rows_(rows), colsBytes_(colsBytes), refcount_(0), dense_(true) {}
+pcl::ChannelData::ChannelData(size_type sizeBytes, void *data) : data_((unsigned char*)data), step_(sizeBytes), rows_(1), colsBytes_(sizeBytes), refcount_(0), dense_(true) {}
+pcl::ChannelData::ChannelData(size_type rows, size_type colsBytes, void *data) : data_((unsigned char*)data), step_(colsBytes), rows_(rows), colsBytes_(colsBytes), refcount_(0), dense_(true) {}
 
-pcl::CloudData::~CloudData() { release(); }
+pcl::ChannelData::~ChannelData() { release(); }
 
 
-pcl::CloudData::CloudData(const CloudData& other) : data_(other.data_), step_(other.step_), rows_(other.rows_),
+pcl::ChannelData::ChannelData(const ChannelData& other) : data_(other.data_), step_(other.step_), rows_(other.rows_),
     colsBytes_(other.colsBytes_), refcount_(other.refcount_), dense_(other.dense_)
 {
   if( refcount_ )
     __XADD__(refcount_, 1);
 }
 
-pcl::CloudData& pcl::CloudData::operator=(const CloudData& other)
+pcl::ChannelData& pcl::ChannelData::operator=(const ChannelData& other)
 {
   if( this != &other )
   {
@@ -77,8 +77,8 @@ pcl::CloudData& pcl::CloudData::operator=(const CloudData& other)
   return *this;
 }
 
-void pcl::CloudData::create(size_type sizeBytes) { create(1, sizeBytes); }
-void pcl::CloudData::create(size_type rows, size_type colsBytes)
+void pcl::ChannelData::create(size_type sizeBytes) { create(1, sizeBytes); }
+void pcl::ChannelData::create(size_type rows, size_type colsBytes)
 {
   if (rows  == rows_ && colsBytes == colsBytes_)
     return;
@@ -99,7 +99,7 @@ void pcl::CloudData::create(size_type rows, size_type colsBytes)
    }
 }
 
-void pcl::CloudData::release()
+void pcl::ChannelData::release()
 {
   if( refcount_ && __XADD__(refcount_, -1) == 1 )
   {
@@ -113,7 +113,7 @@ void pcl::CloudData::release()
   refcount_ = 0;
 }
 
-void pcl::CloudData::swap(CloudData& other)
+void pcl::ChannelData::swap(ChannelData& other)
 {
   std::swap(data_, other.data_);
   std::swap(step_, other.step_);
@@ -123,7 +123,7 @@ void pcl::CloudData::swap(CloudData& other)
   std::swap(dense_, other.dense_);
 }
 
-void pcl::CloudData::copyTo(CloudData& other) const
+void pcl::ChannelData::copyTo(ChannelData& other) const
 {
   if (empty())
     other.release();
@@ -137,26 +137,26 @@ void pcl::CloudData::copyTo(CloudData& other) const
   }
 }
 
-bool pcl::CloudData::empty() const { return !data_; }
-pcl::CloudData::size_type pcl::CloudData::rows()      const { return  rows_; }
-pcl::CloudData::size_type pcl::CloudData::colsBytes() const { return colsBytes_; }
-pcl::CloudData::size_type pcl::CloudData::step()      const { return step_; }
+bool pcl::ChannelData::empty() const { return !data_; }
+pcl::ChannelData::size_type pcl::ChannelData::rows()      const { return  rows_; }
+pcl::ChannelData::size_type pcl::ChannelData::colsBytes() const { return colsBytes_; }
+pcl::ChannelData::size_type pcl::ChannelData::step()      const { return step_; }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// CloudSet
+// Cloud
 
-pcl::CloudSet::CloudSet()
+pcl::Cloud::Cloud()
 {
-  for(int i = 0; i < MAX_CLOUDS; ++i)
+  for(int i = 0; i < MAX_ChannelS; ++i)
     storage_[i].type_ = ChannelKind::None;
 }
 
 
-pcl::CloudData pcl::CloudSet::create(size_type rows, size_type colsBytes, const std::string& name)
+pcl::ChannelData pcl::Cloud::create(size_type rows, size_type colsBytes, const std::string& name)
 {
   int i = name_search(name);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.create(rows, colsBytes);
     storage_[i].type_ = ChannelKind::None;
@@ -164,42 +164,42 @@ pcl::CloudData pcl::CloudSet::create(size_type rows, size_type colsBytes, const 
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.create(rows, colsBytes);
     storage_[i].name_ = name;
     storage_[i].type_ = ChannelKind::None;
   }
   else
-      PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+      PCL_FatalError("Maximal supported Channels limit reached for Cloud");
   return storage_[i].data_;
 }
 
-void pcl::CloudSet::set(const CloudData& data, const std::string& name)
+void pcl::Cloud::set(const ChannelData& data, const std::string& name)
 {
   int i = name_search(name);
 
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_ = data;
     return;
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_ = data;
     storage_[i].name_ = name;
     storage_[i].type_ = ChannelKind::None;
   }
   else
-    PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+    PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 }
 
-void pcl::CloudSet::remove(const std::string& name)
+void pcl::Cloud::remove(const std::string& name)
 {
   int i = name_search(name);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.release();
     storage_[i].name_.clear();
@@ -207,42 +207,42 @@ void pcl::CloudSet::remove(const std::string& name)
   }
 }
 
-pcl::CloudData pcl::CloudSet::get(const std::string& name)
+pcl::ChannelData pcl::Cloud::get(const std::string& name)
 {
   int i = name_search(name);
-  return i == MAX_CLOUDS ? CloudData() : storage_[i].data_;
+  return i == MAX_ChannelS ? ChannelData() : storage_[i].data_;
 }
 
-const pcl::CloudData pcl::CloudSet::get(const std::string& name) const
+const pcl::ChannelData pcl::Cloud::get(const std::string& name) const
 {
   int i = name_search(name);
-  return i == MAX_CLOUDS ? CloudData() : storage_[i].data_;
+  return i == MAX_ChannelS ? ChannelData() : storage_[i].data_;
 }
 
-void pcl::CloudSet::set(const CloudData& cloud_data, int type)
+void pcl::Cloud::set(const ChannelData& Channel_data, int type)
 {
   int i = type_search(type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    storage_[i].data_ = cloud_data;
+    storage_[i].data_ = Channel_data;
     return;
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    storage_[i].data_ = cloud_data;
+    storage_[i].data_ = Channel_data;
     storage_[i].type_ = type;
     storage_[i].name_.clear();
   }
   else
-    PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+    PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 }
 
-void pcl::CloudSet::remove(int type)
+void pcl::Cloud::remove(int type)
 {
   int i = type_search(type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
     storage_[i].data_.release();
     storage_[i].name_.clear();
@@ -250,28 +250,28 @@ void pcl::CloudSet::remove(int type)
   }
 }
 
-int pcl::CloudSet::name_search(const std::string& name) const
+int pcl::Cloud::name_search(const std::string& name) const
 {
   int i = 0;
-  for(; i < MAX_CLOUDS; ++i)
+  for(; i < MAX_ChannelS; ++i)
     if(storage_[i].name_ == name)
       break;
   return i;
 }
 
-int pcl::CloudSet::type_search(int type) const
+int pcl::Cloud::type_search(int type) const
 {
   int i = 0;
-  for(; i < MAX_CLOUDS; ++i)
+  for(; i < MAX_ChannelS; ++i)
     if(storage_[i].type_ == type)
       break;
   return i;
 }
 
-int pcl::CloudSet::empty_search() const
+int pcl::Cloud::empty_search() const
 {
   int i = 0;
-  for(; i < MAX_CLOUDS; ++i)
+  for(; i < MAX_ChannelS; ++i)
     if(storage_[i].name_.empty() && storage_[i].type_ == ChannelKind::None)
       break;
   return i;

@@ -274,13 +274,13 @@ namespace pcl
   template<typename T> struct memkind_traits<type> { enum { kind = MemoryKind::mem }; }
 
 //  DECLARE_TEMPLATED_MEMORY_TRAITS(std::vector<T>, CPU);
-//  DECLARE_TEMPLATED_MEMORY_TRAITS(pcl::Cloud<T>, CPU);
-//  DECLARE_MEMORY_TRAITS(pcl::CloudData, CPU);
-//  DECLARE_MEMORY_TRAITS(pcl::CloudSet, CPU);
+//  DECLARE_TEMPLATED_MEMORY_TRAITS(pcl::Channel<T>, CPU);
+//  DECLARE_MEMORY_TRAITS(pcl::ChannelData, CPU);
+//  DECLARE_MEMORY_TRAITS(pcl::Cloud, CPU);
 
-//  DECLARE_TEMPLATED_MEMORY_TRAITS(pcl::cuda::CudaCloud<T>, CUDA);
-//  DECLARE_MEMORY_TRAITS(pcl::cuda::CudaData, CUDA);
-//  DECLARE_MEMORY_TRAITS(pcl::cuda::CudaCloudSet, CUDA);
+//  DECLARE_TEMPLATED_MEMORY_TRAITS(pcl::cuda::CudaChannel<T>, CUDA);
+//  DECLARE_MEMORY_TRAITS(pcl::cuda::CudaChannelData, CUDA);
+//  DECLARE_MEMORY_TRAITS(pcl::cuda::CudaCloud, CUDA);
 
 
 #undef DECLARE_MEMORY_TRAITS

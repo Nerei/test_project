@@ -36,7 +36,7 @@
 #pragma once
 
 #include <pcl2/core/types.hpp>
-#include <pcl2/core/clouds/cloud.hpp>
+#include <pcl2/core/clouds/clouds.hpp>
 #include <vector>
 #include <string>
 
@@ -50,25 +50,25 @@ namespace pcl
     In();
 
     template<typename T> In(const T& data);
-    template<typename T> In(const Cloud<T>& cloud);
-    template<typename T> In(const std::vector<T>& cloud);
+    template<typename T> In(const Channel<T>& Channel);
+    template<typename T> In(const std::vector<T>& Channel);
 
     template<typename T>
-    const Cloud<T>  get(const std::string& name) const;
-    const CloudData get(const std::string& name) const;
+    const Channel<T>  get(const std::string& name) const;
+    const ChannelData get(const std::string& name) const;
 
     template<typename T>
-    const Cloud<T>  get() const;
-    const CloudData get() const;
+    const Channel<T>  get() const;
+    const ChannelData get() const;
 
     int type() const;
   protected:
 
-    CloudData from_vector(size_t size_bytes = 0, bool allocate = false) const;
+    ChannelData from_vector(size_t size_bytes = 0, bool allocate = false) const;
 
     struct Kind
     {
-      enum { None, Cloud, CloudSet, StdVector };
+      enum { None, Channel, Cloud, StdVector };
     };
 
     int kind_;
@@ -81,20 +81,20 @@ namespace pcl
   public:
     Out();
     template<typename T> Out(const T& data);
-    template<typename T> Out(const Cloud<T>& cloud);
-    template<typename T> Out(const std::vector<T>& cloud);
+    template<typename T> Out(const Channel<T>& Channel);
+    template<typename T> Out(const std::vector<T>& Channel);
 
     template<typename T>
-    Cloud<T> create(size_type rows, size_type cols);
-    CloudData create(size_type rows, size_type colsBytes, const std::string& name);
-    CloudData create(size_type rows, size_type colsBytes);
+    Channel<T> create(size_type rows, size_type cols);
+    ChannelData create(size_type rows, size_type colsBytes, const std::string& name);
+    ChannelData create(size_type rows, size_type colsBytes);
 
   };
 
-  template<> PCL_EXPORTS In::In(const CloudData& cloud_data);
-  template<> PCL_EXPORTS In::In(const CloudSet& cloud_set);
-  template<> PCL_EXPORTS pcl::Out::Out(const CloudData& cloud_data);
-  template<> PCL_EXPORTS pcl::Out::Out(const CloudSet& cloud_set);
+  template<> PCL_EXPORTS In::In(const ChannelData& Channel_data);
+  template<> PCL_EXPORTS In::In(const Cloud& Channel_set);
+  template<> PCL_EXPORTS pcl::Out::Out(const ChannelData& Channel_data);
+  template<> PCL_EXPORTS pcl::Out::Out(const Cloud& Channel_set);
 }
 
 
@@ -102,38 +102,38 @@ namespace pcl
 /// Implementation
 
 
-template<typename T> inline pcl::In::In(const Cloud<T>& cloud) : kind_(Kind::Cloud), type_(channel_traits<T>::type), obj_((void)*&cloud) {}
-template<typename T> inline pcl::In::In(const std::vector<T>& cloud)  : kind_(Kind::StdVector), type_(channel_traits<T>::type), obj_((void)*&cloud) {}
+template<typename T> inline pcl::In::In(const Channel<T>& Channel) : kind_(Kind::Channel), type_(channel_traits<T>::type), obj_((void)*&Channel) {}
+template<typename T> inline pcl::In::In(const std::vector<T>& Channel)  : kind_(Kind::StdVector), type_(channel_traits<T>::type), obj_((void)*&Channel) {}
 
-template<typename T> inline const pcl::Cloud<T> pcl::In::get(const std::string& name) const { return Cloud<T>(get(name)); }
+template<typename T> inline const pcl::Channel<T> pcl::In::get(const std::string& name) const { return Channel<T>(get(name)); }
 
-template<typename T> inline const pcl::Cloud<T> pcl::In::get() const
+template<typename T> inline const pcl::Channel<T> pcl::In::get() const
 {
-  if (kind_ == Kind::CloudSet)
-    return reinterpret_cast<const CloudSet*>(obj_)->get<T>();
+  if (kind_ == Kind::Cloud)
+    return reinterpret_cast<const Cloud*>(obj_)->get<T>();
   else
-    return (type_ == channel_traits<T>::type) ? Cloud<T>(get()) : Cloud<T>();
+    return (type_ == channel_traits<T>::type) ? Channel<T>(get()) : Channel<T>();
 }
 
-template<typename T> inline pcl::Out::Out(const Cloud<T>& cloud) : In(cloud) {}
-template<typename T> inline pcl::Out::Out(const std::vector<T>& cloud)  : In(cloud) {}
+template<typename T> inline pcl::Out::Out(const Channel<T>& Channel) : In(Channel) {}
+template<typename T> inline pcl::Out::Out(const std::vector<T>& Channel)  : In(Channel) {}
 
-template<typename T> inline pcl::Cloud<T> pcl::Out::create(size_type rows, size_type cols)
+template<typename T> inline pcl::Channel<T> pcl::Out::create(size_type rows, size_type cols)
 {
-  if (kind_ == Kind::CloudSet)
+  if (kind_ == Kind::Cloud)
   {
-    CloudSet& cloud_set = *reinterpret_cast<CloudSet*>(obj_);
-    return cloud_set.create<T>(rows, cols);
+    Cloud& Channel_set = *reinterpret_cast<Cloud*>(obj_);
+    return Channel_set.create<T>(rows, cols);
   }
 
   PCL_Assert(channel_traits<T>::type == type_);
 
-  if (kind_ == Kind::Cloud)
+  if (kind_ == Kind::Channel)
   {
-    Cloud<T>& cloud = *reinterpret_cast<Cloud<T>*>(obj_);
-    return cloud.create(rows, cols), cloud;
+    Channel<T>& channel = *reinterpret_cast<Channel<T>*>(obj_);
+    return channel.create(rows, cols), channel;
   }
   else /* Kind::StdVector */
-    return Cloud<T>(from_vector(cols * rows*sizeof(T), true));
+    return Channel<T>(from_vector(cols * rows*sizeof(T), true));
 }
 

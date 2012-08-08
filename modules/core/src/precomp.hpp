@@ -36,8 +36,8 @@
 #pragma once
 
 #include <pcl2/pcl_config.h>
-#include <pcl2/core/clouds/cloud.hpp>
-#include <pcl2/core/clouds/cuda_cloud.hpp>
+#include <pcl2/core/clouds/clouds.hpp>
+#include <pcl2/core/clouds/cuda_clouds.hpp>
 #include <pcl2/core/core.hpp>
 #include <pcl2/core/internal.hpp>
 #include <algorithm>

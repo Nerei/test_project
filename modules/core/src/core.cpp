@@ -46,22 +46,22 @@ void pcl::fatal_error(const std::string& message, const std::string& file, int l
 
 
 
-void pcl::scaleCloud1(const CloudSet& input_cloud, CloudSet& output_cloud)
+void pcl::scaleCloud1(const Cloud& input_cloud, Cloud& output_cloud)
 {
   //gets smart pointer for "typed" data
-  const Cloud<Point3f> cloud = input_cloud.get<Point3f>();
+  const Channel<Point3f> channel = input_cloud.get<Point3f>();
 
-  //gets smart pointer CloudData for "named" "untyped" channel and reinterprets it as "typed" cloud
-  const Cloud<float> fpfh33f(input_cloud.get("fpfh33"));
+  //gets smart pointer ChannelData for "named" "untyped" channel and reinterprets it as "typed" Channel
+  const Channel<float> fpfh33f(input_cloud.get("fpfh33"));
 
   PCL_Assert( fpfh33f.cols() == 33 );
   size_t features_count = fpfh33f.rows();
 
   //allocates "typed" channel and gets smart pointer to it
-  Cloud<Point3f> output = output_cloud.create<Point3f>(1, 10);
+  Channel<Point3f> output = output_cloud.create<Point3f>(1, 10);
 
   //allocates "named" "untyped" channel and gets smart pointer to it
-  CloudData output_featues = output_cloud.create(features_count, 33 * sizeof(float), "fpfh33");
+  ChannelData output_featues = output_cloud.create(features_count, 33 * sizeof(float), "fpfh33");
 
   //rewrites "named" channel with new data, old buffer will be released
   output_cloud.set(fpfh33f, "fpfh33");
@@ -70,36 +70,36 @@ void pcl::scaleCloud1(const CloudSet& input_cloud, CloudSet& output_cloud)
 void pcl::scaleCloud2(const In& input_cloud, Out& output_cloud)
 {
   //gets named data
-  const CloudData cloud_data = input_cloud.get("fpfh33");
+  const ChannelData channel_data = input_cloud.get("fpfh33");
 
-  //gets named data and reinterprets as typed cloud
-  const Cloud<float> cloud = input_cloud.get<float>("fpfh33");
+  //gets named data and reinterprets as typed Channel
+  const Channel<float> channel = input_cloud.get<float>("fpfh33");
 
   //checks that data is the same
-  PCL_Assert(cloud.ptr() == cloud_data.ptr<float>());
+  PCL_Assert(channel.ptr() == channel_data.ptr<float>());
 
-  //gets data, works only if 'input_cloud' proxy class was constructed with Cloud or CloudData
-  const CloudData cloud_data1 = input_cloud.get();
+  //gets data, works only if 'input_Channel' proxy class was constructed with Channel or ChannelData
+  const ChannelData channel_data1 = input_cloud.get();
 
-  //gets "typed" data, works for CloudSet, Cloud<Normal3f>, std::vector<Normal3f>
+  //gets "typed" data, works for Cloud, Channel<Normal3f>, std::vector<Normal3f>
   //returns empty pointer if input doesn't contain such channel
-  const Cloud<Normal3f> cloud1 = input_cloud.get<Normal3f>();
+  const Channel<Normal3f> channel1 = input_cloud.get<Normal3f>();
 
   size_t rows = 10;
   size_t cols = 10;
   size_t colsBytes = cols * sizeof(Point3f);
 
-  //allocates "typed" channel, works for CloudSet, Cloud<Point3f>, vector<Point3f>
-  Cloud<Point3f> c1 = output_cloud.create<Point3f>(rows, cols);
+  //allocates "typed" channel, works for Cloud, Channel<Point3f>, vector<Point3f>
+  Channel<Point3f> c1 = output_cloud.create<Point3f>(rows, cols);
 
-  //allocates "named" channel, works only for CloudSet
-  CloudData c2 = output_cloud.create(rows, colsBytes, "named");
+  //allocates "named" channel, works only for Cloud
+  ChannelData c2 = output_cloud.create(rows, colsBytes, "named");
 
-  // allocates array, works only for Cloud<T>, CloudData, vector<T>
-  // won't work for CloudSet since "unnamed" and "untyped"
-  // PCL_Assert(colsBytes % sizeof(T) == 0), where T is a value of template parameter of object from which output_cloud was constructed
+  // allocates array, works only for Channel<T>, ChannelData, vector<T>
+  // won't work for Cloud since "unnamed" and "untyped"
+  // PCL_Assert(colsBytes % sizeof(T) == 0), where T is a value of template parameter of object from which output_Channel was constructed
   // That means if passed vector<Point3f>, then can't allocate colsBytes == 2.    
-  CloudData c3 = output_cloud.create(rows, colsBytes);
+  ChannelData c3 = output_cloud.create(rows, colsBytes);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,27 +131,27 @@ size_t pcl::ChannelKind::size_of(int type)
 // pc::In
 
 pcl::In::In() : kind_(Kind::None), type_(channel_traits<void>::type), obj_(0) {}
-template<> pcl::In::In(const CloudData& cloud_data) : kind_(Kind::Cloud), type_(channel_traits<unsigned char>::type), obj_((void*)&cloud_data) {}
-template<> pcl::In::In(const CloudSet& cloud_set)   : kind_(Kind::CloudSet),  type_(channel_traits<void>::type), obj_((void*)&cloud_set) {}
+template<> pcl::In::In(const ChannelData& Channel_data) : kind_(Kind::Channel), type_(channel_traits<unsigned char>::type), obj_((void*)&Channel_data) {}
+template<> pcl::In::In(const Cloud& Channel_set)   : kind_(Kind::Cloud),  type_(channel_traits<void>::type), obj_((void*)&Channel_set) {}
 
 int pcl::In::type() const { return type_; }
 
-const pcl::CloudData pcl::In::get(const std::string& name) const
+const pcl::ChannelData pcl::In::get(const std::string& name) const
 {
-  PCL_Assert(kind_ == Kind::CloudSet);
-  return reinterpret_cast<const CloudSet*>(obj_)->get(name);;
+  PCL_Assert(kind_ == Kind::Cloud);
+  return reinterpret_cast<const Cloud*>(obj_)->get(name);;
 }
 
-const pcl::CloudData pcl::In::get() const
+const pcl::ChannelData pcl::In::get() const
 {
-  if (kind_ == Kind::CloudSet)
-    PCL_Assert(!"Can't retrieve untyped and unnamed CloudData from CloudSet");
   if (kind_ == Kind::Cloud)
-    return *reinterpret_cast<const CloudData*>(obj_);
+    PCL_Assert(!"Can't retrieve untyped and unnamed ChannelData from Cloud");
+  if (kind_ == Kind::Channel)
+    return *reinterpret_cast<const ChannelData*>(obj_);
   else /* kind_ == KInd::StdVector */
     return from_vector();
   
-  return CloudData();
+  return ChannelData();
 };
 
 namespace 
@@ -171,7 +171,7 @@ namespace
   }
 }
   
-pcl::CloudData pcl::In::from_vector(size_t size_bytes, bool allocate) const
+pcl::ChannelData pcl::In::from_vector(size_t size_bytes, bool allocate) const
 {
   typedef const void* (*func_t)(const void *, size_t&, bool);
   using namespace pcl;
@@ -193,36 +193,36 @@ pcl::CloudData pcl::In::from_vector(size_t size_bytes, bool allocate) const
       PCL_FatalError("Unsupported type");
 
   const void *data = funcs[type_](obj_, size_bytes, allocate);
-  return CloudData(1, size_bytes, (void*)data);
+  return ChannelData(1, size_bytes, (void*)data);
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // pc::Out
 
-template<> pcl::Out::Out(const CloudData& cloud_data)  : In(cloud_data) {}
-template<> pcl::Out::Out(const CloudSet& cloud_set) : In(cloud_set) {}
+template<> pcl::Out::Out(const ChannelData& Channel_data)  : In(Channel_data) {}
+template<> pcl::Out::Out(const Cloud& Channel_set) : In(Channel_set) {}
 
-pcl::CloudData pcl::Out::create(size_type rows, size_type colsBytes, const std::string& name)
+pcl::ChannelData pcl::Out::create(size_type rows, size_type colsBytes, const std::string& name)
 {
-  PCL_Assert(kind_ == Kind::CloudSet);
-  CloudSet& cloud_set = *reinterpret_cast<CloudSet*>(obj_);
-  return cloud_set.create(rows, colsBytes, name);
+  PCL_Assert(kind_ == Kind::Cloud);
+  Cloud& Channel_set = *reinterpret_cast<Cloud*>(obj_);
+  return Channel_set.create(rows, colsBytes, name);
 }
 
-pcl::CloudData pcl::Out::create(size_type rows, size_type colsBytes)
+pcl::ChannelData pcl::Out::create(size_type rows, size_type colsBytes)
 {
-  if (kind_ == Kind::CloudSet)
-    PCL_FatalError("Can't allocate unnamed and untyped data in CloudSet");
+  if (kind_ == Kind::Cloud)
+    PCL_FatalError("Can't allocate unnamed and untyped data in Cloud");
   
   size_t type_size = ChannelKind::size_of(type_);
   PCL_Assert(colsBytes % type_size == 0);
   
-  if (kind_ == Kind::Cloud)
+  if (kind_ == Kind::Channel)
   {
-    CloudData cloud_data = *reinterpret_cast<CloudData*>(obj_);
-    cloud_data.create(rows, colsBytes);
-    return cloud_data;
+    ChannelData Channel_data = *reinterpret_cast<ChannelData*>(obj_);
+    Channel_data.create(rows, colsBytes);
+    return Channel_data;
   }
   else /* Kind::StdVector */
     return from_vector(colsBytes * rows, true);

@@ -43,10 +43,10 @@ using namespace std;
 
 int main()
 {
-    pcl::Cloud<int> c(10, 10);
+    pcl::Channel<int> c(10, 10);
 
-    pcl::cuda::CudaData a(10, 10);
-    pcl::cuda::CudaCloud<int> g(10, 10);
+    pcl::cuda::CudaChannelData a(10, 10);
+    pcl::cuda::CudaChannel<int> g(10, 10);
 
     g.upload(c);
     cout << "hello" << endl;

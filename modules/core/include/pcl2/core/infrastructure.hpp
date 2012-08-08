@@ -35,7 +35,7 @@
 
 #pragma once
 
-#include <pcl/core/clouds/cloud.hpp>
+#include <pcl/core/Channels/Channel.hpp>
 
 
 class Grabber
@@ -45,10 +45,10 @@ public:
     virtual ~Grabber() = 0;
 
     //blocking
-    virtual void grab(CloudSet& data) = 0;
+    virtual void grab(Cloud& data) = 0;
 
     //non-blocking, returns has_data
-    virtual bool try_grab(CloudSet& data, int wait_time) = 0;
+    virtual bool try_grab(Cloud& data, int wait_time) = 0;
 
 
         

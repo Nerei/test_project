@@ -38,15 +38,15 @@
 #include <pcl2/core/pcl_exports.hpp>
 #include <pcl2/core/errors.hpp>
 #include <pcl2/core/types.hpp>
-#include <pcl2/core/clouds/cloud.hpp>
-#include <pcl2/core/clouds/cuda_cloud.hpp>
+#include <pcl2/core/clouds/clouds.hpp>
+#include <pcl2/core/clouds/cuda_clouds.hpp>
 #include <pcl2/core/proxy_types.hpp>
 
 namespace pcl
 {
 
-PCL_EXPORTS void scaleCloud1(const CloudSet& input_cloud, CloudSet& output_cloud_out);
+PCL_EXPORTS void scaleCloud1(const Cloud& input_cloud, Cloud& output_cloud);
 
-PCL_EXPORTS void scaleCloud2(const In& input_cloud, Out& output_cloud_out);
+PCL_EXPORTS void scaleCloud2(const In& input_cloud, Out& output_cloud);
 
 }

@@ -35,7 +35,7 @@
 
 #pragma once
 
-#include <pcl2/core/clouds/cloud.hpp>
+#include <pcl2/core/clouds/clouds.hpp>
 #include <pcl2/core/clouds/cuda_kernel_types.hpp>
 
 namespace pcl
@@ -43,11 +43,11 @@ namespace pcl
   namespace cuda
   {
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b CudaCloud class
+    /** \brief @b CudaChannel class
       * \note This is a BLOB container class with reference counting for GPU memory
       * \author Anatoly Baksheev
       */
-    class PCL_EXPORTS CudaData
+    class PCL_EXPORTS CudaChannelData
     {
     public:
 
@@ -55,31 +55,31 @@ namespace pcl
       typedef size_t size_type;
 
       /** \brief Empty constructor. */
-      CudaData();
+      CudaChannelData();
 
       /** \brief Destructor. */
-      ~CudaData();
+      ~CudaChannelData();
 
       /** \brief Allocates internal buffer on GPU */
-      CudaData(size_type sizeBytes);
+      CudaChannelData(size_type sizeBytes);
 
       /** \brief Allocates internal buffer on GPU */
-      CudaData(size_type rows, size_type colsBytes);
+      CudaChannelData(size_type rows, size_type colsBytes);
 
       /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case */
-      CudaData(size_type sizeBytes, void *data);
+      CudaChannelData(size_type sizeBytes, void *data);
 
       /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case */
-      CudaData(size_type rows, size_type colsBytes, void *data, size_type step);
+      CudaChannelData(size_type rows, size_type colsBytes, void *data, size_type step);
 
       /** \brief Copy constructor. Just increments reference counter */
-      CudaData(const CudaData& other);
+      CudaChannelData(const CudaChannelData& other);
 
       /** \brief Upload constructor */
-      CudaData(const pcl::CloudData& other);
+      CudaChannelData(const pcl::ChannelData& other);
 
       /** \brief Assigment operator. Just increments reference counter */
-      CudaData& operator=(const CudaData& other);
+      CudaChannelData& operator=(const CudaChannelData& other);
 
        /** \brief Allocates internal buffer on GPU */
       void create(size_t sizeBytes);
@@ -91,10 +91,10 @@ namespace pcl
       void release();
 
       /** \brief Performs swap of pointers to allocated data. */
-      void swap(CudaData& other);
+      void swap(CudaChannelData& other);
 
       /** \brief Performs data copying. If destination size differs it will be reallocated */
-      void copyTo(CudaData& other) const;
+      void copyTo(CudaChannelData& other) const;
 
       /** \brief Returns pointer to y-th row for internal buffer in GPU memory. */
       template<typename T> T* ptr(int y = 0);
@@ -124,10 +124,10 @@ namespace pcl
       bool pitched() const;
 
       /** \brief Uploads data to internal buffer in GPU memory */
-      void upload(const CloudData& cloud_data);
+      void upload(const ChannelData& Channel_data);
 
       /** \brief Downloads data from internal buffer to CPU memory */
-      void download(CloudData& cloud_data) const;
+      void download(ChannelData& Channel_data) const;
 
       /** \brief Conversion to PtrSz for passing to kernel functions. */
       template <class U> operator PtrSz<U>() const;
@@ -159,12 +159,12 @@ namespace pcl
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Cloud class
+    /** \brief @b Channel class
       * \note Templated container class with reference counting for GPU memory
       * \author Anatoly Baksheev
       */
     template<typename T>
-    class PCL_EXPORTS CudaCloud : public CudaData
+    class PCL_EXPORTS CudaChannel : public CudaChannelData
     {
     public:
       /** \brief Value type */
@@ -174,31 +174,31 @@ namespace pcl
       enum { elem_size = sizeof(T) };
 
       /** \brief Empty constructor. */
-      CudaCloud();
+      CudaChannel();
 
       /** \brief Allocates internal buffer */
-      explicit CudaCloud(size_type size);
+      explicit CudaChannel(size_type size);
 
       /** \brief Allocates internal buffer */
-      CudaCloud(size_type rows, size_type cols);
+      CudaChannel(size_type rows, size_type cols);
 
       /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case */
-      CudaCloud(size_type size, T *data);
+      CudaChannel(size_type size, T *data);
 
-      /** \CloudData Initializes with user allocated buffer. Reference counting is disabled in this case */
-      CudaCloud(size_type rows, size_type cols, T *data, size_type step);
+      /** \ChannelData Initializes with user allocated buffer. Reference counting is disabled in this case */
+      CudaChannel(size_type rows, size_type cols, T *data, size_type step);
 
       /** \brief Copy constructor. Just increments reference counter */
-      CudaCloud(const CudaCloud& other);
+      CudaChannel(const CudaChannel& other);
 
       /** \brief Reinterpret constructor. Just increments reference counter */
-      explicit CudaCloud(const CudaData& other);
+      explicit CudaChannel(const CudaChannelData& other);
 
       /** \brief Upload constructor */
-      explicit CudaCloud(const Cloud<T>& other);
+      explicit CudaChannel(const Channel<T>& other);
 
       /** \brief Assigment operator. Just increments reference counter */
-      CudaCloud& operator=(const CudaCloud& other);
+      CudaChannel& operator=(const CudaChannel& other);
 
       /** \brief Allocates internal buffer. */
       void create(size_type size);
@@ -210,10 +210,10 @@ namespace pcl
       void release();
 
       /** \brief Performs swap of data pointed with another device memory. */
-      void swap(CudaCloud& other);
+      void swap(CudaChannel& other);
 
       /** \brief Performs data copying. If destination size differs it will be reallocated. */
-      void copyTo(CudaCloud& other) const;
+      void copyTo(CudaChannel& other) const;
 
       /** \brief Returns pointer to y-th row in internal buffer. */
       T* ptr(int y = 0);
@@ -228,81 +228,81 @@ namespace pcl
       size_type cols() const;
 
       /** \brief Uploads data to internal buffer in GPU memory */
-      void upload(const Cloud<T>& cloud);
+      void upload(const Channel<T>& Channel);
 
       /** \brief Downloads data from internal buffer to CPU memory */
-      void download(Cloud<T>& cloud) const;
+      void download(Channel<T>& Channel) const;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b CloudSet class
-      * \note Collection of clouds.
+    /** \brief @b Cloud class
+      * \note Collection of Channels.
       * \author Anatoly Baksheev
       */
 
-    class CudaCloudSet
+    class CudaCloud
     {
     public:
       /** \brief Size type */
       typedef size_t size_type;
 
       /** \brief Empty constructor */
-      CudaCloudSet();
+      CudaCloud();
 
-      /** \brief Adds single cloud */
+      /** \brief Adds single Channel */
       template<typename T>
-      CudaCloudSet(const CudaCloud<T>& cloud);
+      CudaCloud(const CudaChannel<T>& Channel);
 
-      /** \brief Acllocates new named cloud. Does nothing if exists with the same size */
-      CudaData create(size_type rows, size_type colsBytes, const std::string& name);
+      /** \brief Acllocates new named Channel. Does nothing if exists with the same size */
+      CudaChannelData create(size_type rows, size_type colsBytes, const std::string& name);
 
       /** \brief Acllocates nwe buffer by type. Does nothing if exists with the same size */
-      template<typename T> CudaCloud<T> create(size_type rows, size_type cols);
+      template<typename T> CudaChannel<T> create(size_type rows, size_type cols);
 
-      /** \brief Adds typed cloud to the set */
-      template<typename T> void set(const CudaCloud<T>& cloud);
+      /** \brief Adds typed Channel to the set */
+      template<typename T> void set(const CudaChannel<T>& Channel);
 
-      /** \brief Removes typed cloud from the set */
+      /** \brief Removes typed Channel from the set */
       template<typename T> void remove();
 
-      /** \brief Retrieves typed cloud from the set */
-      template<typename T> CudaCloud<T> get();
+      /** \brief Retrieves typed Channel from the set */
+      template<typename T> CudaChannel<T> get();
 
-      /** \brief Retrieves typed cloud from the set */
-      template<typename T> const CudaCloud<T> get() const;
+      /** \brief Retrieves typed Channel from the set */
+      template<typename T> const CudaChannel<T> get() const;
 
-      /** \brief Adds named cloud data to the set */
-      void set(const CudaData& data, const std::string& name);
+      /** \brief Adds named Channel data to the set */
+      void set(const CudaChannelData& data, const std::string& name);
 
-      /** \brief Removes named cloud data from the set */
+      /** \brief Removes named Channel data from the set */
       void remove(const std::string& name);
 
-      /** \brief Retrieves named cloud data from the set */
-      CudaData get(const std::string& name);
+      /** \brief Retrieves named Channel data from the set */
+      CudaChannelData get(const std::string& name);
 
-      /** \brief Retrieves named cloud data from the set */
-      const CudaData get(const std::string& name) const;
+      /** \brief Retrieves named Channel data from the set */
+      const CudaChannelData get(const std::string& name) const;
 
     private:
-      /** \brief Adds cloud data with to the set */
-      void set(const CudaData& cloud_data, int type);
+      /** \brief Adds Channel data with to the set */
+      void set(const CudaChannelData& Channel_data, int type);
 
-      /** \brief Adds Removes cloud data by type from the set */
+      /** \brief Adds Removes Channel data by type from the set */
       void remove(int type);
 
       /** \brief Storeage element type */
       struct value_type
       {
         int type_;
-        CudaData data_;
+        CudaChannelData data_;
         std::string name_;
       };
 
       /** \brief Maximal supported set size */
-      enum { MAX_CLOUDS = 32 };
+      enum { MAX_ChannelS = 32 };
 
-      /** \brief Cloud storage */
-      value_type storage_[MAX_CLOUDS];
+      /** \brief Channel storage */
+      value_type storage_[MAX_ChannelS];
 
       /** \brief Searches index by name in the storage */
       int name_search(const std::string& name)  const;
@@ -315,7 +315,7 @@ namespace pcl
     };
 
     template<typename T>
-    CudaCloudSet& operator+=(CudaCloudSet& cloud_set, const CudaCloud<T>& cloud);
+    CudaCloud& operator+=(CudaCloud& Channel_set, const CudaChannel<T>& Channel);
   }
 }
 
@@ -323,13 +323,13 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Implementation
 
-template<typename T> inline T* pcl::cuda::CudaData::ptr(int y)
+template<typename T> inline T* pcl::cuda::CudaChannelData::ptr(int y)
 { return (T*)((char*)data_ + colsBytes_ * y); }
 
-template<typename T> inline const T* pcl::cuda::CudaData::ptr(int y) const
+template<typename T> inline const T* pcl::cuda::CudaChannelData::ptr(int y) const
 { return (const T*)((const char*)data_ + colsBytes_ * y); }
 
-template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrSz<U>() const
+template <class U> inline pcl::cuda::CudaChannelData::operator pcl::cuda::PtrSz<U>() const
 {
   PtrSz<U> result;
   result.data = (U*)ptr<U>();
@@ -337,7 +337,7 @@ template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrSz<U>() co
   return result;
 }
 
-template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrStep<U>() const
+template <class U> inline pcl::cuda::CudaChannelData::operator pcl::cuda::PtrStep<U>() const
 {
   PtrStepSz<U> result;
   result.data = (U*)ptr<U>();
@@ -345,7 +345,7 @@ template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrStep<U>() 
   return result;
 }
 
-template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrStepSz<U>() const
+template <class U> inline pcl::cuda::CudaChannelData::operator pcl::cuda::PtrStepSz<U>() const
 {
   PtrStepSz<U> result;
   result.data = (U*)ptr<U>();
@@ -355,80 +355,80 @@ template <class U> inline pcl::cuda::CudaData::operator pcl::cuda::PtrStepSz<U>(
   return result;
 }
 
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud() {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(size_type size) : CudaData(size * elem_size) {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(size_type rows, size_type cols) : CudaData(rows, cols * elem_size) {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(size_type size, T *data) : CudaData(size * elem_size, data) {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(size_type rows, size_type cols, T *data, size_type step) : CudaData(rows, cols * elem_size, data, step) {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(const CudaCloud& other) : CudaData(other) {}
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(const Cloud<T>& other) { upload(other); }
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel() {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(size_type size) : CudaChannelData(size * elem_size) {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(size_type rows, size_type cols) : CudaChannelData(rows, cols * elem_size) {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(size_type size, T *data) : CudaChannelData(size * elem_size, data) {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(size_type rows, size_type cols, T *data, size_type step) : CudaChannelData(rows, cols * elem_size, data, step) {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(const CudaChannel& other) : CudaChannelData(other) {}
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(const Channel<T>& other) { upload(other); }
 
-template<typename T> inline pcl::cuda::CudaCloud<T>::CudaCloud(const CudaData& other)
-{ CudaData::operator=(other); }
+template<typename T> inline pcl::cuda::CudaChannel<T>::CudaChannel(const CudaChannelData& other)
+{ CudaChannelData::operator=(other); }
 
-template<typename T> inline pcl::cuda::CudaCloud<T>& pcl::cuda::CudaCloud<T>::operator=(const CudaCloud& other)
-{ CudaData::operator=(other); return *this; }
+template<typename T> inline pcl::cuda::CudaChannel<T>& pcl::cuda::CudaChannel<T>::operator=(const CudaChannel& other)
+{ CudaChannelData::operator=(other); return *this; }
 
-template<typename T> inline void pcl::cuda::CudaCloud<T>::create(size_type size) { CudaData::create(size * elem_size); }
-template<typename T> inline void pcl::cuda::CudaCloud<T>::create(size_type rows, size_type cols) { CudaData::create(rows, cols * elem_size); }
-template<typename T> inline void pcl::cuda::CudaCloud<T>::release() { CudaData::release(); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::create(size_type size) { CudaChannelData::create(size * elem_size); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::create(size_type rows, size_type cols) { CudaChannelData::create(rows, cols * elem_size); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::release() { CudaChannelData::release(); }
 
-template<typename T> inline void pcl::cuda::CudaCloud<T>::copyTo(CudaCloud& other) const { CudaData::copyTo(other); }
-template<typename T> inline void pcl::cuda::CudaCloud<T>::swap(CudaCloud& other)         { CudaData::swap(other); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::copyTo(CudaChannel& other) const { CudaChannelData::copyTo(other); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::swap(CudaChannel& other)         { CudaChannelData::swap(other); }
 
-template<typename T> inline       T* pcl::cuda::CudaCloud<T>::ptr(int y)       { return CudaData::ptr<T>(y); }
-template<typename T> inline const T* pcl::cuda::CudaCloud<T>::ptr(int y) const { return CudaData::ptr<T>(y); }
+template<typename T> inline       T* pcl::cuda::CudaChannel<T>::ptr(int y)       { return CudaChannelData::ptr<T>(y); }
+template<typename T> inline const T* pcl::cuda::CudaChannel<T>::ptr(int y) const { return CudaChannelData::ptr<T>(y); }
 
-template<typename T> inline typename pcl::cuda::CudaCloud<T>::size_type pcl::cuda::CudaCloud<T>::rows() const { return CudaData::rows(); }
-template<typename T> inline typename pcl::cuda::CudaCloud<T>::size_type pcl::cuda::CudaCloud<T>::cols() const { return CudaData::colsBytes()/elem_size; }
+template<typename T> inline typename pcl::cuda::CudaChannel<T>::size_type pcl::cuda::CudaChannel<T>::rows() const { return CudaChannelData::rows(); }
+template<typename T> inline typename pcl::cuda::CudaChannel<T>::size_type pcl::cuda::CudaChannel<T>::cols() const { return CudaChannelData::colsBytes()/elem_size; }
 
-template<typename T> inline void pcl::cuda::CudaCloud<T>::upload(const Cloud<T>& cloud) { CudaData::upload(cloud); }
-template<typename T> inline void pcl::cuda::CudaCloud<T>::download(Cloud<T>& cloud) const { CudaData::download(cloud); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::upload(const Channel<T>& Channel) { CudaChannelData::upload(Channel); }
+template<typename T> inline void pcl::cuda::CudaChannel<T>::download(Channel<T>& Channel) const { CudaChannelData::download(Channel); }
 
 
-template<typename T> inline pcl::cuda::CudaCloudSet::CudaCloudSet(const CudaCloud<T>& cloud) { set(cloud); }
+template<typename T> inline pcl::cuda::CudaCloud::CudaCloud(const CudaChannel<T>& Channel) { set(Channel); }
 
-template<typename T> inline pcl::cuda::CudaCloud<T> pcl::cuda::CudaCloudSet::create(size_type rows, size_type cols)
+template<typename T> inline pcl::cuda::CudaChannel<T> pcl::cuda::CudaCloud::create(size_type rows, size_type cols)
 {
   int i = type_search(channel_traits<T>::type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    reinterpret_cast<CudaCloud<T>&>(storage_[i].data_).create(rows, cols);
+    reinterpret_cast<CudaChannel<T>&>(storage_[i].data_).create(rows, cols);
     storage_[i].name_.clear();
     return storage_[i].data_;
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    reinterpret_cast<CudaCloud<T>&>(storage_[i].data_).create(rows, cols);
+    reinterpret_cast<CudaChannel<T>&>(storage_[i].data_).create(rows, cols);
     storage_[i].name_.clear();
     storage_[i].type_ = channel_traits<T>::type;
   }
   else
-    PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+    PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 
   return storage_[i].data_;
 }
 
 
-template<typename T> void pcl::cuda::CudaCloudSet::set(const CudaCloud<T>& cloud) { set(cloud, channel_traits<T>::type); }
-template<typename T> void pcl::cuda::CudaCloudSet::remove() { remove(channel_traits<T>::type); }
+template<typename T> void pcl::cuda::CudaCloud::set(const CudaChannel<T>& Channel) { set(Channel, channel_traits<T>::type); }
+template<typename T> void pcl::cuda::CudaCloud::remove() { remove(channel_traits<T>::type); }
 
-template<typename T> pcl::cuda::CudaCloud<T> pcl::cuda::CudaCloudSet::get()
+template<typename T> pcl::cuda::CudaChannel<T> pcl::cuda::CudaCloud::get()
 {
   int i = type_search(channel_traits<T>::type);
-  return i == MAX_CLOUDS ? CudaCloud<T>() : (CudaCloud<T>&)storage_[i].data_;
+  return i == MAX_ChannelS ? CudaChannel<T>() : (CudaChannel<T>&)storage_[i].data_;
 }
 
-template<typename T> const pcl::cuda::CudaCloud<T> pcl::cuda::CudaCloudSet::get() const
+template<typename T> const pcl::cuda::CudaChannel<T> pcl::cuda::CudaCloud::get() const
 {
   int i = type_search(channel_traits<T>::type);
-  return i == MAX_CLOUDS ? CudaCloud<T>() : (CudaCloud<T>&)storage_[i].data_;
+  return i == MAX_ChannelS ? CudaChannel<T>() : (CudaChannel<T>&)storage_[i].data_;
 }
 
 
-template<typename T> inline pcl::cuda::CudaCloudSet& pcl::cuda::operator+=(CudaCloudSet& cloud_set, const CudaCloud<T>& cloud)
+template<typename T> inline pcl::cuda::CudaCloud& pcl::cuda::operator+=(CudaCloud& Channel_set, const CudaChannel<T>& Channel)
 {
-  cloud_set.set(cloud); return cloud_set;
+  Channel_set.set(Channel); return Channel_set;
 }

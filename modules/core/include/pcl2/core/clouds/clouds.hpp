@@ -45,11 +45,11 @@
 namespace pcl
 {
    //////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b CloudData class
+  /** \brief @b ChannelData class
     * \note BLOB container class with reference counting.
     * \author Anatoly Baksheev
     */
-  class PCL_EXPORTS CloudData
+  class PCL_EXPORTS ChannelData
   {
   public:
 
@@ -57,28 +57,28 @@ namespace pcl
     typedef size_t size_type;
 
     /** \brief Empty constructor */
-    CloudData();
+    ChannelData();
 
     /** \brief Destructor */
-    ~CloudData();
+    ~ChannelData();
 
     /** \brief Allocates internal buffer */
-    CloudData(size_type sizeBytes);
+    ChannelData(size_type sizeBytes);
 
     /** \brief Allocates internal buffer */
-    CloudData(size_type rows, size_type colsBytes);
+    ChannelData(size_type rows, size_type colsBytes);
 
     /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case */
-    CloudData(size_type sizeBytes, void *data);
+    ChannelData(size_type sizeBytes, void *data);
 
-    /** \CloudData Initializes with user allocated buffer. Reference counting is disabled in this case */
-    CloudData(size_type rows, size_type colsBytes, void *data);
+    /** \ChannelData Initializes with user allocated buffer. Reference counting is disabled in this case */
+    ChannelData(size_type rows, size_type colsBytes, void *data);
 
     /** \brief Copy constructor. Just increments reference counter */
-    CloudData(const CloudData& other);
+    ChannelData(const ChannelData& other);
 
     /** \brief Assigment operator. Just increments reference counter */
-    CloudData& operator=(const CloudData& other);
+    ChannelData& operator=(const ChannelData& other);
 
     /** \brief Allocates internal buffer. */
     void create(size_type sizeBytes);
@@ -90,10 +90,10 @@ namespace pcl
     void release();
 
     /** \brief Performs swap of pointers to allocated data. */
-    void swap(CloudData& other);
+    void swap(ChannelData& other);
 
     /** \brief Performs data copying. If destination size differs it will be reallocated */
-    void copyTo(CloudData& other) const;
+    void copyTo(ChannelData& other) const;
 
     /** \brief Returns pointer to y-th row in internal buffer. */
     template<typename T> T* ptr(int y = 0);
@@ -140,12 +140,12 @@ namespace pcl
   };
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b Cloud class
+  /** \brief @b Channel class
     * \note Templated container class with reference counting.
     * \author Anatoly Baksheev
     */
   template<typename T>
-  class PCL_EXPORTS Cloud : public CloudData
+  class PCL_EXPORTS Channel : public ChannelData
   {
   public:
 
@@ -156,31 +156,31 @@ namespace pcl
     enum { elem_size = sizeof(T) };
 
     /** \brief Empty constructor */
-    Cloud();
+    Channel();
 
     /** \brief Allocates internal buffer */
-    explicit Cloud(size_type size);
+    explicit Channel(size_type size);
 
     /** \brief Allocates internal buffer */
-    Cloud(size_type rows, size_type cols);
+    Channel(size_type rows, size_type cols);
 
     /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case. */
-    Cloud(size_type size, T *data);
+    Channel(size_type size, T *data);
 
-    /** \CloudData Initializes with user allocated buffer. Reference counting is disabled in this case. */
-    Cloud(size_type rows, size_type cols, T *data);
+    /** \ChannelData Initializes with user allocated buffer. Reference counting is disabled in this case. */
+    Channel(size_type rows, size_type cols, T *data);
 
-    /** \CloudData Initializes with user allocated buffer. Reference counting is disabled in this case. */
-    Cloud(const std::vector<T>& data);
+    /** \ChannelData Initializes with user allocated buffer. Reference counting is disabled in this case. */
+    Channel(const std::vector<T>& data);
 
     /** \brief Copy constructor. Just increments reference counter. */
-    Cloud(const Cloud& other);
+    Channel(const Channel& other);
 
     /** \brief Reinterpret constructor. Just increments reference counter. */
-    explicit Cloud(const CloudData& other);
+    explicit Channel(const ChannelData& other);
 
     /** \brief Assigment operator. Just increments reference counter. */
-    Cloud& operator=(const Cloud& other);
+    Channel& operator=(const Channel& other);
 
     /** \brief Allocates internal buffer. */
     void create(size_type size);
@@ -192,10 +192,10 @@ namespace pcl
     void release();
 
     /** \brief Performs swap of data pointed with another device memory. */
-    void swap(Cloud& other);
+    void swap(Channel& other);
 
     /** \brief Performs data copying. If destination size differs it will be reallocated. */
-    void copyTo(Cloud& other) const;
+    void copyTo(Channel& other) const;
 
     /** \brief Returns pointer to y-th row in internal buffer. */
     T* ptr(int y = 0);
@@ -211,74 +211,74 @@ namespace pcl
   };
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b CloudSet class
-    * \note Collection of clouds.
+  /** \brief @b Cloud class
+    * \note Collection of Channels.
     * \author Anatoly Baksheev
     */
 
-  class PCL_EXPORTS CloudSet
+  class PCL_EXPORTS Cloud
   {
   public:
     /** \brief Size type */
     typedef size_t size_type;
 
     /** \brief Empty constructor */
-    CloudSet();
+    Cloud();
 
-    /** \brief Adds single cloud */
+    /** \brief Adds single Channel */
     template<typename T>
-    CloudSet(const Cloud<T>& cloud);
+    Cloud(const Channel<T>& Channel);
 
-    /** \brief Acllocates new named cloud. Does nothing if exists with the same size */
-    CloudData create(size_type rows, size_type colsBytes, const std::string& name);
+    /** \brief Acllocates new named Channel. Does nothing if exists with the same size */
+    ChannelData create(size_type rows, size_type colsBytes, const std::string& name);
 
     /** \brief Acllocates nwe buffer by type. Does nothing if exists with the same size */
-    template<typename T> Cloud<T> create(size_type rows, size_type cols);
+    template<typename T> Channel<T> create(size_type rows, size_type cols);
 
-    /** \brief Adds typed cloud to the set */
-    template<typename T> void set(const Cloud<T>& cloud);
+    /** \brief Adds typed Channel to the set */
+    template<typename T> void set(const Channel<T>& Channel);
 
-    /** \brief Removes typed cloud from the set */
+    /** \brief Removes typed Channel from the set */
     template<typename T> void remove();
 
-    /** \brief Retrieves typed cloud from the set */
-    template<typename T> Cloud<T> get();
+    /** \brief Retrieves typed Channel from the set */
+    template<typename T> Channel<T> get();
 
-    /** \brief Retrieves typed cloud from the set */
-    template<typename T> const Cloud<T> get() const;
+    /** \brief Retrieves typed Channel from the set */
+    template<typename T> const Channel<T> get() const;
 
-    /** \brief Adds named cloud data to the set */
-    void set(const CloudData& data, const std::string& name);
+    /** \brief Adds named Channel data to the set */
+    void set(const ChannelData& data, const std::string& name);
 
-    /** \brief Removes named cloud data from the set */
+    /** \brief Removes named Channel data from the set */
     void remove(const std::string& name);
 
-    /** \brief Retrieves named cloud data from the set */
-    CloudData get(const std::string& name);
+    /** \brief Retrieves named Channel data from the set */
+    ChannelData get(const std::string& name);
 
-    /** \brief Retrieves named cloud data from the set */
-    const CloudData get(const std::string& name) const;
+    /** \brief Retrieves named Channel data from the set */
+    const ChannelData get(const std::string& name) const;
 
   private:
-    /** \brief Adds cloud data with to the set */
-    void set(const CloudData& cloud_data, int type);
+    /** \brief Adds Channel data with to the set */
+    void set(const ChannelData& Channel_data, int type);
 
-    /** \brief Adds Removes cloud data by type from the set */
+    /** \brief Adds Removes Channel data by type from the set */
     void remove(int type);
 
     /** \brief Storeage element type */
     struct value_type
     {
       int type_;
-      CloudData data_;
+      ChannelData data_;
       std::string name_;
     };
 
     /** \brief Maximal supported set size */
-    enum { MAX_CLOUDS = 32 };
+    enum { MAX_ChannelS = 32 };
 
-    /** \brief Cloud storage */
-    value_type storage_[MAX_CLOUDS];
+    /** \brief Channel storage */
+    value_type storage_[MAX_ChannelS];
 
     /** \brief Searches index by name in the storage */
     int name_search(const std::string& name)  const;
@@ -291,88 +291,88 @@ namespace pcl
   };
 
   template<typename T>
-  CloudSet& operator+=(CloudSet& cloud_set, const Cloud<T>& cloud);
+  Cloud& operator+=(Cloud& Channel_set, const Channel<T>& Channel);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Implementation
 
-template<typename T> inline T* pcl::CloudData::ptr(int y)
+template<typename T> inline T* pcl::ChannelData::ptr(int y)
 { return (T*)((char*)data_ + colsBytes_ * y); }
 
-template<typename T> inline const T* pcl::CloudData::ptr(int y) const
+template<typename T> inline const T* pcl::ChannelData::ptr(int y) const
 { return (const T*)((const char*)data_ + colsBytes_ * y); }
 
-template<typename T> inline pcl::Cloud<T>::Cloud() {}
-template<typename T> inline pcl::Cloud<T>::Cloud(size_type size) : CloudData(size * elem_size) {}
-template<typename T> inline pcl::Cloud<T>::Cloud(size_type rows, size_type cols) : CloudData(rows, cols * elem_size) {}
-template<typename T> inline pcl::Cloud<T>::Cloud(size_type size, T *data) : CloudData(size * elem_size, data) {}
-template<typename T> inline pcl::Cloud<T>::Cloud(size_type rows, size_type cols, T *data) : CloudData(rows, cols * elem_size, data) {}
-template<typename T> inline pcl::Cloud<T>::Cloud(const std::vector<T>& data) : CloudData(1, data.size() * elem_size, (void*)&data[0]) {}
-template<typename T> inline pcl::Cloud<T>::Cloud(const Cloud& other) : CloudData(other) {}
+template<typename T> inline pcl::Channel<T>::Channel() {}
+template<typename T> inline pcl::Channel<T>::Channel(size_type size) : ChannelData(size * elem_size) {}
+template<typename T> inline pcl::Channel<T>::Channel(size_type rows, size_type cols) : ChannelData(rows, cols * elem_size) {}
+template<typename T> inline pcl::Channel<T>::Channel(size_type size, T *data) : ChannelData(size * elem_size, data) {}
+template<typename T> inline pcl::Channel<T>::Channel(size_type rows, size_type cols, T *data) : ChannelData(rows, cols * elem_size, data) {}
+template<typename T> inline pcl::Channel<T>::Channel(const std::vector<T>& data) : ChannelData(1, data.size() * elem_size, (void*)&data[0]) {}
+template<typename T> inline pcl::Channel<T>::Channel(const Channel& other) : ChannelData(other) {}
 
-template<typename T> inline pcl::Cloud<T>::Cloud(const CloudData& other)
-{ PCL_Assert( other.colsBytes() % sizeof(T) == 0); CloudData::operator=(other); }
+template<typename T> inline pcl::Channel<T>::Channel(const ChannelData& other)
+{ PCL_Assert( other.colsBytes() % sizeof(T) == 0); ChannelData::operator=(other); }
 
-template<typename T> inline pcl::Cloud<T>& pcl::Cloud<T>::operator=(const Cloud& other)
-{ CloudData::operator=(other); return *this; }
+template<typename T> inline pcl::Channel<T>& pcl::Channel<T>::operator=(const Channel& other)
+{ ChannelData::operator=(other); return *this; }
 
-template<typename T> inline void pcl::Cloud<T>::create(size_type size) { CloudData::create(size * elem_size); }
-template<typename T> inline void pcl::Cloud<T>::create(size_type rows, size_type cols) { CloudData::create(rows, cols * elem_size); }
-template<typename T> inline void pcl::Cloud<T>::release() { CloudData::release(); }
+template<typename T> inline void pcl::Channel<T>::create(size_type size) { ChannelData::create(size * elem_size); }
+template<typename T> inline void pcl::Channel<T>::create(size_type rows, size_type cols) { ChannelData::create(rows, cols * elem_size); }
+template<typename T> inline void pcl::Channel<T>::release() { ChannelData::release(); }
 
-template<typename T> inline void pcl::Cloud<T>::copyTo(Cloud& other) const { CloudData::copyTo(other); }
-template<typename T> inline void pcl::Cloud<T>::swap(Cloud& other)         { CloudData::swap(other); }
+template<typename T> inline void pcl::Channel<T>::copyTo(Channel& other) const { ChannelData::copyTo(other); }
+template<typename T> inline void pcl::Channel<T>::swap(Channel& other)         { ChannelData::swap(other); }
 
-template<typename T> inline       T* pcl::Cloud<T>::ptr(int y)       { return CloudData::ptr<T>(y); }
-template<typename T> inline const T* pcl::Cloud<T>::ptr(int y) const { return CloudData::ptr<T>(y); }
+template<typename T> inline       T* pcl::Channel<T>::ptr(int y)       { return ChannelData::ptr<T>(y); }
+template<typename T> inline const T* pcl::Channel<T>::ptr(int y) const { return ChannelData::ptr<T>(y); }
 
-template<typename T> inline pcl::CloudData::size_type pcl::Cloud<T>::rows() const { return CloudData::rows(); }
-template<typename T> inline pcl::CloudData::size_type pcl::Cloud<T>::cols() const { return CloudData::colsBytes()/elem_size; }
+template<typename T> inline pcl::ChannelData::size_type pcl::Channel<T>::rows() const { return ChannelData::rows(); }
+template<typename T> inline pcl::ChannelData::size_type pcl::Channel<T>::cols() const { return ChannelData::colsBytes()/elem_size; }
 
-template<typename T> inline pcl::CloudSet::CloudSet(const Cloud<T>& cloud) { set(cloud); }
+template<typename T> inline pcl::Cloud::Cloud(const Channel<T>& Channel) { set(Channel); }
 
-template<typename T> inline pcl::Cloud<T> pcl::CloudSet::create(size_type rows, size_type cols)
+template<typename T> inline pcl::Channel<T> pcl::Cloud::create(size_type rows, size_type cols)
 {
   int i = type_search(channel_traits<T>::type);
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    reinterpret_cast<Cloud<T>&>(storage_[i].data_).create(rows, cols);
+    reinterpret_cast<Channel<T>&>(storage_[i].data_).create(rows, cols);
     storage_[i].name_.clear();
-    return Cloud<T>(storage_[i].data_);
+    return Channel<T>(storage_[i].data_);
   }
 
   i = empty_search();
-  if (i != MAX_CLOUDS)
+  if (i != MAX_ChannelS)
   {
-    reinterpret_cast<Cloud<T>&>(storage_[i].data_).create(rows, cols);
+    reinterpret_cast<Channel<T>&>(storage_[i].data_).create(rows, cols);
     storage_[i].name_.clear();
     storage_[i].type_ = channel_traits<T>::type;
   }
   else
-    PCL_FatalError("Maximal supported clouds limit reached for CloudSet");
+    PCL_FatalError("Maximal supported Channels limit reached for Cloud");
 
-  return Cloud<T>(storage_[i].data_);
+  return Channel<T>(storage_[i].data_);
 }
 
-template<typename T> inline void pcl::CloudSet::set(const Cloud<T>& cloud) { set(cloud, channel_traits<T>::type); }
-template<typename T> inline void pcl::CloudSet::remove() { remove(channel_traits<T>::type); }
+template<typename T> inline void pcl::Cloud::set(const Channel<T>& Channel) { set(Channel, channel_traits<T>::type); }
+template<typename T> inline void pcl::Cloud::remove() { remove(channel_traits<T>::type); }
 
-template<typename T> inline pcl::Cloud<T> pcl::CloudSet::get()
+template<typename T> inline pcl::Channel<T> pcl::Cloud::get()
 {
   int i = type_search(channel_traits<T>::type);
-  return i == MAX_CLOUDS ? Cloud<T>() : (Cloud<T>&)storage_[i].data_;
+  return i == MAX_ChannelS ? Channel<T>() : (Channel<T>&)storage_[i].data_;
 }
 
-template<typename T> inline const pcl::Cloud<T> pcl::CloudSet::get() const
+template<typename T> inline const pcl::Channel<T> pcl::Cloud::get() const
 {
   int i = type_search(channel_traits<T>::type);
-  return i == MAX_CLOUDS ? Cloud<T>() : (Cloud<T>&)storage_[i].data_;
+  return i == MAX_ChannelS ? Channel<T>() : (Channel<T>&)storage_[i].data_;
 }
 
-template<typename T> inline pcl::CloudSet& pcl::operator+=(CloudSet& cloud_set, const Cloud<T>& cloud)
+template<typename T> inline pcl::Cloud& pcl::operator+=(Cloud& Channel_set, const Channel<T>& Channel)
 {
-  cloud_set.set(cloud); return cloud_set;
+  Channel_set.set(Channel); return Channel_set;
 }
 
 

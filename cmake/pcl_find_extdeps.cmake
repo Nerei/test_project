@@ -154,7 +154,7 @@ macro(find_external_dependencies)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
   # ---[ PCL1.x temporary ]---
-  #find_package ( PCL )
+  find_package ( PCL )
   if (PCL_FOUND)
     include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
     link_directories(${PCL_LIBRARY_DIRS})   
