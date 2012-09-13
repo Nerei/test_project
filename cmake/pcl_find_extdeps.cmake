@@ -173,9 +173,8 @@ macro(find_external_dependencies)
   # ---[ FLANN ]---
   #pcl_find_flann()
 
-
   # ---[ OpenNI ]---
-  if (WITH_OPENNI)
+  if (WITH_OpenNI)
     pcl_find_openni()
   endif()
  
