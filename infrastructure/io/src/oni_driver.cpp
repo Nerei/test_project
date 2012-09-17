@@ -1,6 +1,7 @@
 #include <XnCppWrapper.h>
 
 #include <pcl2/io/oni_driver.hpp>
+#include <pcl2/io/impl/oni_device_source.hpp>
 
 namespace pcl {
   class ONIDriver::Impl {
@@ -38,7 +39,7 @@ namespace pcl {
 
     Source *
     openDevice(void * device_id) {
-      return NULL; // for now
+      return new ONIDeviceSource(oniContext, *static_cast<xn::NodeInfo *>(device_id));
     }
   };
 

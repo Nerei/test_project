@@ -9,7 +9,7 @@ namespace pcl {
     struct Mode {
       void * id;
       int pixelWidth;
-      int pixelWeight;
+      int pixelHeight;
       int frameRate;
     };
 
@@ -32,8 +32,9 @@ namespace pcl {
     virtual Grabber * start() = 0;
 
   protected:
-    virtual bool isChannelAvailable(ChannelKind kind) const = 0;
-    virtual bool enableChannel(ChannelKind kind, bool enabled) = 0;
+    Source() {}
+    virtual bool isChannelAvailable(int kind) const = 0;
+    virtual bool enableChannel(int kind, bool enabled) = 0;
 
   private:
     Source(const Source &);
