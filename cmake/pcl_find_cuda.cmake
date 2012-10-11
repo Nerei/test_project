@@ -61,5 +61,7 @@ if(CUDA_FOUND)
   if (cuda_nvcc_target_flags)
     #message(STATUS "CUDA NVCC target flags: ${cuda_nvcc_target_flags}")
     list(APPEND CUDA_NVCC_FLAGS ${cuda_nvcc_target_flags})
-  endif() 
+  endif()
+
+  mark_as_advanced(CUDA_BUILD_CUBIN CUDA_BUILD_EMULATION CUDA_VERBOSE_BUILD CUDA_SDK_ROOT_DIR)  
 endif()

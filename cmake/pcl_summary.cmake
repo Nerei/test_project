@@ -69,6 +69,8 @@ endfunction()
 function(print_configuration_summary)  
   status("")
   status("Summary configuration for PCL ${PCL_VERSION} =====================================")
+  status("")
+  status("Version control:"      ${SVN_REVISION})
   
   # ========================== build platform ==========================
   status("")
